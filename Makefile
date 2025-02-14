@@ -2,7 +2,7 @@
 BINARY_NAME=merch-service
 
 # Переменные для путей
-CMD_PATH=cmd/merch-service
+CMD_PATH=cmd
 OUTPUT_PATH=bin
 
 # Установка зависимостей
