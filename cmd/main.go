@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"merch-store/internal/app/di"
-	"merch-store/internal/config"
-	"merch-store/internal/pkg/db"
-	"merch-store/internal/server"
+	"merch-shop/internal/app/di"
+	"merch-shop/internal/config"
+	"merch-shop/internal/pkg/db"
+	"merch-shop/internal/server"
 
 	"github.com/joho/godotenv"
 )

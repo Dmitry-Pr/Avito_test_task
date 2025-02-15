@@ -2,15 +2,19 @@ package handlers
 
 import (
 	"encoding/json"
-	"merch-store/internal/app/services"
+	"merch-shop/internal/app/services"
 	"net/http"
 )
 
-type MerchHandler struct {
-	service *services.MerchService
+type MerchHandlerInterface interface {
+	GetMerch(w http.ResponseWriter, r *http.Request)
 }
 
-func NewMerchHandler(service *services.MerchService) *MerchHandler {
+type MerchHandler struct {
+	service services.MerchServiceInterface
+}
+
+func NewMerchHandler(service services.MerchServiceInterface) MerchHandlerInterface {
 	return &MerchHandler{service: service}
 }
 
@@ -22,8 +26,7 @@ func (h *MerchHandler) GetMerch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(merch)
-	if err != nil {
-		return
+	if err := json.NewEncoder(w).Encode(merch); err != nil {
+		http.Error(w, "Ошибка кодирования ответа", http.StatusInternalServerError)
 	}
 }

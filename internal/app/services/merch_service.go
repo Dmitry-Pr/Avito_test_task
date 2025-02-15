@@ -1,12 +1,16 @@
 package services
 
-import "merch-store/internal/app/repositories"
+import "merch-shop/internal/app/repositories"
 
-type MerchService struct {
-	repo *repositories.MerchRepository
+type MerchServiceInterface interface {
+	GetAllMerch() ([]string, error)
 }
 
-func NewMerchService(repo *repositories.MerchRepository) *MerchService {
+type MerchService struct {
+	repo repositories.MerchRepositoryInterface
+}
+
+func NewMerchService(repo repositories.MerchRepositoryInterface) MerchServiceInterface {
 	return &MerchService{repo: repo}
 }
 

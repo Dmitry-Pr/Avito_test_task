@@ -2,13 +2,18 @@ package repositories
 
 import (
 	"database/sql"
+	"log"
 )
+
+type MerchRepositoryInterface interface {
+	GetAll() ([]string, error)
+}
 
 type MerchRepository struct {
 	db *sql.DB
 }
 
-func NewMerchRepository(db *sql.DB) *MerchRepository {
+func NewMerchRepository(db *sql.DB) MerchRepositoryInterface {
 	return &MerchRepository{db: db}
 }
 
@@ -17,7 +22,11 @@ func (r *MerchRepository) GetAll() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("Error closing rows: %v", err)
+		}
+	}()
 
 	var merchList []string
 	for rows.Next() {

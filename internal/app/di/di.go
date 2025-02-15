@@ -2,16 +2,16 @@ package di
 
 import (
 	"database/sql"
-	"merch-store/internal/app/handlers"
-	"merch-store/internal/app/repositories"
-	"merch-store/internal/app/services"
+	"merch-shop/internal/app/handlers"
+	"merch-shop/internal/app/repositories"
+	"merch-shop/internal/app/services"
 )
 
 type Dependencies struct {
 	DB           *sql.DB
-	MerchRepo    *repositories.MerchRepository
-	MerchService *services.MerchService
-	MerchHandler *handlers.MerchHandler
+	MerchRepo    repositories.MerchRepositoryInterface
+	MerchService services.MerchServiceInterface
+	MerchHandler handlers.MerchHandlerInterface
 }
 
 func BuildDependencies(db *sql.DB) *Dependencies {
