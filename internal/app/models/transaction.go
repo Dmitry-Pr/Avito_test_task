@@ -1,13 +1,15 @@
 package models
 
-import "time"
+import "gorm.io/gorm"
 
 type Transaction struct {
-	ID         int64     `json:"id"`
-	UserID     int64     `json:"user_id"`
-	Type       string    `json:"type"`
-	Amount     int64     `json:"amount"`
-	FromUserID int64     `json:"from_user_id,omitempty"`
-	ToUserID   int64     `json:"to_user_id,omitempty"`
-	CreatedAt  time.Time `json:"created_at"`
+	gorm.Model
+	UserID     uint
+	User       User `gorm:"foreignKey:UserID"`
+	Type       string
+	Amount     int64
+	FromUserID *uint `gorm:"nullable:true"`
+	FromUser   *User `gorm:"foreignKey:FromUserID;constraint:OnUpdate:CASCADE;nullable:true"`
+	ToUserID   *uint `gorm:"nullable:true"`
+	ToUser     *User `gorm:"foreignKey:ToUserID;constraint:OnUpdate:CASCADE;nullable:true"`
 }

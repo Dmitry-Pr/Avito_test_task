@@ -1,7 +1,10 @@
 package models
 
+import "gorm.io/gorm"
+
 type User struct {
-	ID          int64  `json:"id"`
-	Username    string `json:"username"`
-	CoinBalance int64  `json:"coin_balance"`
+	gorm.Model
+	Username string `gorm:"uniqueIndex"`
+	Password string
+	Coins    int `gorm:"default:1000;check:coins >= 0"`
 }

@@ -17,10 +17,11 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func NewServer(cfg *config.Config, container *di.Dependencies) *Server {
+func NewServer(cfg *config.Config, dependencies *di.Dependencies) *Server {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/merch", container.MerchHandler.GetMerch)
+	mux.HandleFunc("/api/auth", dependencies.UserHandler.Authenticate)
+	mux.HandleFunc("/api/merch", dependencies.MerchHandler.GetMerch)
 
 	return &Server{
 		httpServer: &http.Server{

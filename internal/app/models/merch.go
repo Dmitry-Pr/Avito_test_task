@@ -1,7 +1,9 @@
 package models
 
+import "gorm.io/gorm"
+
 type Merch struct {
-	ID    int64  `json:"id"`
-	Name  string `json:"name"`
-	Price int64  `json:"price"`
+	gorm.Model
+	Name  string
+	Price int64
 }

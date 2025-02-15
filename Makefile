@@ -48,3 +48,11 @@ run:
 	go run $(CMD_PATH)/main.go
 
 # Запуск через Docker
+.PHONY: docker
+docker:
+	docker compose up -d --build
+
+# Остановка Docker
+.PHONY: stop
+stop:
+	docker compose down

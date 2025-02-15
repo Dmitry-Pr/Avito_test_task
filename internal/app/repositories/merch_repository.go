@@ -1,41 +1,34 @@
 package repositories
 
 import (
-	"database/sql"
-	"log"
+	"gorm.io/gorm"
 )
+
+type Merch struct {
+	ID   uint   `gorm:"primaryKey"`
+	Name string `gorm:"uniqueIndex"`
+}
 
 type MerchRepositoryInterface interface {
 	GetAll() ([]string, error)
 }
 
 type MerchRepository struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
-func NewMerchRepository(db *sql.DB) MerchRepositoryInterface {
+func NewMerchRepository(db *gorm.DB) MerchRepositoryInterface {
 	return &MerchRepository{db: db}
 }
 
 func (r *MerchRepository) GetAll() ([]string, error) {
-	rows, err := r.db.Query("SELECT name FROM merch")
-	if err != nil {
+	var merchList []string
+	var merchItems []Merch
+	if err := r.db.Model(&Merch{}).Select("name").Find(&merchItems).Error; err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err := rows.Close(); err != nil {
-			log.Printf("Error closing rows: %v", err)
-		}
-	}()
-
-	var merchList []string
-	for rows.Next() {
-		var name string
-		if err := rows.Scan(&name); err != nil {
-			return nil, err
-		}
-		merchList = append(merchList, name)
+	for _, item := range merchItems {
+		merchList = append(merchList, item.Name)
 	}
-
 	return merchList, nil
 }

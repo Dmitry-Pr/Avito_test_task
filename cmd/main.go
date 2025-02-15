@@ -21,18 +21,22 @@ func main() {
 
 	// Инициализируем базу данных
 	database := db.InitDB()
+	sqlDB, err := database.DB()
+	if err != nil {
+		log.Fatal("Ошибка получения *sql.DB из Gorm")
+	}
 	defer func() {
 		log.Println("Закрываем соединение с базой данных")
-		if err := database.Close(); err != nil {
+		if err := sqlDB.Close(); err != nil {
 			log.Println("Ошибка закрытия соединения с базой данных:", err)
 		}
 	}()
 
 	// Создаем DI-контейнер
-	container := di.BuildDependencies(database)
+	dependencies := di.BuildDependencies(database)
 
 	// Запускаем сервер
-	srv := server.NewServer(cfg, container)
+	srv := server.NewServer(cfg, dependencies)
 	if err := srv.Run(); err != nil {
 		log.Fatal(err)
 	}
