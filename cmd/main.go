@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"merch-store/internal/app/di"
 	"merch-store/internal/config"
@@ -22,12 +21,12 @@ func main() {
 
 	// Инициализируем базу данных
 	database := db.InitDB()
-	defer func(database *sql.DB) {
-		err := database.Close()
-		if err != nil {
-			log.Fatal(err)
+	defer func() {
+		log.Println("Закрываем соединение с базой данных")
+		if err := database.Close(); err != nil {
+			log.Println("Ошибка закрытия соединения с базой данных:", err)
 		}
-	}(database)
+	}()
 
 	// Создаем DI-контейнер
 	container := di.BuildDependencies(database)
