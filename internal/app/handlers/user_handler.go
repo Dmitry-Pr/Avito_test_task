@@ -35,5 +35,6 @@ func (h *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Не авторизован", http.StatusUnauthorized)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(AuthResponse{Token: token})
 }

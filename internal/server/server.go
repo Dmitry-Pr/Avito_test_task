@@ -5,8 +5,10 @@ import (
 	"errors"
 	"log"
 	"merch-shop/internal/app/di"
+	"merch-shop/internal/app/middleware"
 	"merch-shop/internal/config"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,10 +25,13 @@ func NewServer(cfg *config.Config, dependencies *di.Dependencies) *Server {
 	mux.HandleFunc("/api/auth", dependencies.UserHandler.Authenticate)
 	mux.HandleFunc("/api/merch", dependencies.MerchHandler.GetMerch)
 
+	handlerWithMiddleware := middleware.AuthMiddleware(mux)
+	handlerWithMiddleware = middleware.LogsMiddleware(mux)
+
 	return &Server{
 		httpServer: &http.Server{
 			Addr:    cfg.Server.Address,
-			Handler: mux,
+			Handler: handlerWithMiddleware,
 		},
 	}
 }

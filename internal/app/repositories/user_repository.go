@@ -1,8 +1,9 @@
 package repositories
 
 import (
-	"gorm.io/gorm"
 	"merch-shop/internal/app/models"
+
+	"gorm.io/gorm"
 )
 
 type IUserRepository interface {

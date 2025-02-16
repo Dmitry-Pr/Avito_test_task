@@ -3,9 +3,12 @@ package services
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"merch-shop/internal/app/models"
 	"merch-shop/internal/app/repositories"
+	"merch-shop/internal/pkg/utils"
+
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type IUserService interface {
@@ -23,21 +26,30 @@ func NewUserService(repo repositories.IUserRepository) *UserService {
 func (s *UserService) Authenticate(username, password string) (string, error) {
 	user, err := s.repo.FindByUsername(username)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) { // Пользователь не найден, создаем нового
-			newUser := &models.User{Username: username, Password: password} // + хеширование пароля!
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+			if err != nil {
+				return "", fmt.Errorf("ошибка хеширования пароля: %w", err)
+			}
+
+			newUser := &models.User{Username: username, Password: string(hashedPassword)}
 			if err := s.repo.Save(newUser); err != nil {
 				return "", fmt.Errorf("не удалось создать пользователя: %w", err)
 			}
-			user = newUser // Присваиваем user только что созданному пользователю
+			user = newUser
 		} else {
-			return "", err // Другая ошибка
+			return "", err
 		}
 	}
 
-	// Проверка пароля (нужно добавить хеширование)
-	if user.Password != password {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
 		return "", errors.New("неверные данные пользователя")
 	}
 
-	return "mock-jwt-token", nil // Тут должен быть JWT
+	token, err := utils.GenerateJWT(user.ID)
+	if err != nil {
+		return "", fmt.Errorf("не удалось создать токен: %w", err)
+	}
+	return token, nil
 }

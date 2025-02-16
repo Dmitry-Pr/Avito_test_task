@@ -1,10 +1,11 @@
 package di
 
 import (
-	"gorm.io/gorm"
 	"merch-shop/internal/app/handlers"
 	"merch-shop/internal/app/repositories"
 	"merch-shop/internal/app/services"
+
+	"gorm.io/gorm"
 )
 
 type Dependencies struct {
