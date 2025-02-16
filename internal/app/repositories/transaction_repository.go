@@ -1,3 +1,4 @@
+// Package repositories Description: Этот файл содержит репозиторий для транзакций.
 package repositories
 
 import (
@@ -7,23 +8,29 @@ import (
 )
 
 const (
-	BuyType      = "buy"
+	// BuyType описывает тип транзакции покупки.
+	BuyType = "buy"
+	// TransferType описывает тип транзакции перевода.
 	TransferType = "transfer"
 )
 
+// TransactionRepositoryInterface описывает репозиторий для транзакций.
 type TransactionRepositoryInterface interface {
 	Create(tx *gorm.DB, t *models.Transaction) error
 	GetTransactionsByUser(tx *gorm.DB, userID uint) ([]models.Transaction, error)
 }
 
+// TransactionRepository репозиторий для транзакций.
 type TransactionRepository struct {
 	db *gorm.DB
 }
 
+// NewTransactionRepository создает новый репозиторий для транзакций.
 func NewTransactionRepository(db *gorm.DB) TransactionRepositoryInterface {
 	return &TransactionRepository{db: db}
 }
 
+// Create создает транзакцию.
 func (r *TransactionRepository) Create(tx *gorm.DB, t *models.Transaction) error {
 	if tx == nil {
 		tx = r.db
@@ -31,6 +38,7 @@ func (r *TransactionRepository) Create(tx *gorm.DB, t *models.Transaction) error
 	return tx.Create(t).Error
 }
 
+// GetTransactionsByUser получает транзакции по пользователю.
 func (r *TransactionRepository) GetTransactionsByUser(tx *gorm.DB, userID uint) ([]models.Transaction, error) {
 	if tx == nil {
 		tx = r.db

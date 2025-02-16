@@ -1,18 +1,22 @@
+// Package services Description: Описание сервиса для работы с транзакциями.
 package services
 
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"merch-shop/internal/app/models"
 	"merch-shop/internal/app/repositories"
+
+	"gorm.io/gorm"
 )
 
+// TransactionServiceInterface описывает сервис для работы с транзакциями.
 type TransactionServiceInterface interface {
 	GetUserTransactionInfo(userID uint) (interface{}, error)
 	SendCoins(fromUserID uint, toUsername string, amount int) error
 }
 
+// TransactionService сервис для работы с транзакциями.
 type TransactionService struct {
 	userRepo        repositories.UserRepositoryInterface
 	transactionRepo repositories.TransactionRepositoryInterface
@@ -20,15 +24,22 @@ type TransactionService struct {
 	inventoryRepo   repositories.InventoryRepositoryInterface
 }
 
+// NewTransactionService создает новый сервис для работы с транзакциями.
 func NewTransactionService(
 	userRepo repositories.UserRepositoryInterface,
 	transactionRepo repositories.TransactionRepositoryInterface,
 	merchRepo repositories.MerchRepositoryInterface,
 	inventoryRepo repositories.InventoryRepositoryInterface,
 ) TransactionServiceInterface {
-	return &TransactionService{userRepo: userRepo, transactionRepo: transactionRepo, merchRepo: merchRepo, inventoryRepo: inventoryRepo}
+	return &TransactionService{
+		userRepo:        userRepo,
+		transactionRepo: transactionRepo,
+		merchRepo:       merchRepo,
+		inventoryRepo:   inventoryRepo,
+	}
 }
 
+// GetUserTransactionInfo получает информацию о транзакциях пользователя.
 func (s *TransactionService) GetUserTransactionInfo(userID uint) (interface{}, error) {
 	transactions, err := s.transactionRepo.GetTransactionsByUser(nil, userID)
 	if err != nil {
@@ -94,6 +105,7 @@ func (s *TransactionService) GetUserTransactionInfo(userID uint) (interface{}, e
 	}, nil
 }
 
+// SendCoins отправляет монеты от одного пользователя другому.
 func (s *TransactionService) SendCoins(fromUserID uint, toUsername string, amount int) error {
 	return s.merchRepo.GetDB().Transaction(func(tx *gorm.DB) error {
 		fromUser, err := s.userRepo.FindByID(tx, fromUserID)

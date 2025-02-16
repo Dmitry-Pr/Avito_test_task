@@ -1,3 +1,4 @@
+// Package db Description: Файл содержит функцию инициализации соединения с БД и миграции таблиц.
 package db
 
 import (
@@ -19,7 +20,8 @@ func InitDB() *gorm.DB {
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
 
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbPort, dbUser, dbPassword, dbName)
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		dbHost, dbPort, dbUser, dbPassword, dbName)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Ошибка подключения к БД: %v", err)
@@ -54,6 +56,7 @@ func InitDB() *gorm.DB {
 	return db
 }
 
+// AddMerch добавляет мерч в базу данных.
 func AddMerch(db *gorm.DB) error {
 	merches := []models.Merch{
 		{Name: "t-shirt", Price: 80},

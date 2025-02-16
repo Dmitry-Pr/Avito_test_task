@@ -1,3 +1,4 @@
+// Package repositories Description: этот файл содержит репозиторий для товаров.
 package repositories
 
 import (
@@ -6,25 +7,30 @@ import (
 	"gorm.io/gorm"
 )
 
+// Merch описывает товар.
 type Merch struct {
 	ID   uint   `gorm:"primaryKey"`
 	Name string `gorm:"uniqueIndex"`
 }
 
+// MerchRepositoryInterface описывает репозиторий для товаров.
 type MerchRepositoryInterface interface {
 	GetAll(tx *gorm.DB) (map[uint]string, error)
 	GetMerchByName(tx *gorm.DB, name string) (*models.Merch, error)
 	GetDB() *gorm.DB
 }
 
+// MerchRepository репозиторий для товаров.
 type MerchRepository struct {
 	db *gorm.DB
 }
 
+// NewMerchRepository создает новый репозиторий для товаров.
 func NewMerchRepository(db *gorm.DB) MerchRepositoryInterface {
 	return &MerchRepository{db: db}
 }
 
+// GetAll получает все товары.
 func (r *MerchRepository) GetAll(tx *gorm.DB) (map[uint]string, error) {
 	if tx == nil {
 		tx = r.db
@@ -40,6 +46,7 @@ func (r *MerchRepository) GetAll(tx *gorm.DB) (map[uint]string, error) {
 	return merchMap, nil
 }
 
+// GetMerchByName получает товар по имени.
 func (r *MerchRepository) GetMerchByName(tx *gorm.DB, name string) (*models.Merch, error) {
 	if tx == nil {
 		tx = r.db
@@ -51,6 +58,7 @@ func (r *MerchRepository) GetMerchByName(tx *gorm.DB, name string) (*models.Merc
 	return &merch, nil
 }
 
+// GetDB возвращает базу данных.
 func (r *MerchRepository) GetDB() *gorm.DB {
 	return r.db
 }

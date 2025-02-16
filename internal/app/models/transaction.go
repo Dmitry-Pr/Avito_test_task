@@ -1,7 +1,9 @@
+// Package models Description: Transaction model.
 package models
 
 import "gorm.io/gorm"
 
+// Transaction model
 type Transaction struct {
 	gorm.Model
 	UserID     uint

@@ -1,3 +1,4 @@
+// Package middleware Description: Middleware для логирования метода запроса, пути и времени обработки.
 package middleware
 
 import (

@@ -1,3 +1,4 @@
+// Package handlers Description: Описывает обработчики для мерча.
 package handlers
 
 import (
@@ -6,18 +7,22 @@ import (
 	"strings"
 )
 
+// MerchHandlerInterface описывает обработчик для мерча.
 type MerchHandlerInterface interface {
 	BuyMerch(w http.ResponseWriter, r *http.Request)
 }
 
+// MerchHandler обработчик для мерча.
 type MerchHandler struct {
 	service services.MerchServiceInterface
 }
 
+// NewMerchHandler создает новый обработчик для мерча.
 func NewMerchHandler(service services.MerchServiceInterface) MerchHandlerInterface {
 	return &MerchHandler{service: service}
 }
 
+// BuyMerch купить мерч.
 func (h *MerchHandler) BuyMerch(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value("user_id").(uint)
 	if !ok {

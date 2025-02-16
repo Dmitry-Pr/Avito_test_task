@@ -1,17 +1,21 @@
+// Package services Description: Описывает сервис для работы с мерчем.
 package services
 
 import (
 	"errors"
 	"fmt"
-	"gorm.io/gorm"
 	"merch-shop/internal/app/models"
 	"merch-shop/internal/app/repositories"
+
+	"gorm.io/gorm"
 )
 
+// MerchServiceInterface описывает сервис для работы с мерчем.
 type MerchServiceInterface interface {
 	BuyMerch(userID uint, merchName string) error
 }
 
+// MerchService сервис для работы с мерчем.
 type MerchService struct {
 	repo            repositories.MerchRepositoryInterface
 	userRepo        repositories.UserRepositoryInterface
@@ -19,6 +23,7 @@ type MerchService struct {
 	inventoryRepo   repositories.InventoryRepositoryInterface
 }
 
+// NewMerchService создает новый сервис для работы с мерчем.
 func NewMerchService(
 	repo repositories.MerchRepositoryInterface,
 	userRepo repositories.UserRepositoryInterface,
@@ -28,6 +33,7 @@ func NewMerchService(
 	return &MerchService{repo: repo, userRepo: userRepo, transactionRepo: transactionRepo, inventoryRepo: inventoryRepo}
 }
 
+// BuyMerch покупает мерч.
 func (s *MerchService) BuyMerch(userID uint, merchName string) error {
 	return s.repo.GetDB().Transaction(func(tx *gorm.DB) error {
 		merch, err := s.repo.GetMerchByName(tx, merchName)
@@ -46,7 +52,7 @@ func (s *MerchService) BuyMerch(userID uint, merchName string) error {
 
 		if err := s.transactionRepo.Create(tx, &models.Transaction{
 			UserID: userID,
-			Type:   "buy",
+			Type:   repositories.BuyType,
 			Amount: -merch.Price,
 		}); err != nil {
 			return fmt.Errorf("не удалось создать транзакцию: %w", err)

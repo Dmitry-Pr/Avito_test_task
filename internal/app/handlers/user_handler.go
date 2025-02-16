@@ -1,3 +1,4 @@
+// Package handlers Description: Описывает обработчики запросов для пользователей.
 package handlers
 
 import (
@@ -6,27 +7,33 @@ import (
 	"net/http"
 )
 
+// UserHandlerInterface описывает обработчик запросов для пользователей.
 type UserHandlerInterface interface {
 	Authenticate(w http.ResponseWriter, r *http.Request)
 }
 
+// UserHandler обработчик запросов для пользователей.
 type UserHandler struct {
 	userService services.UserServiceInterface
 }
 
+// NewUserHandler создает новый обработчик запросов для пользователей.
 func NewUserHandler(userService services.UserServiceInterface) *UserHandler {
 	return &UserHandler{userService: userService}
 }
 
+// AuthRequest структура запроса на аутентификацию.
 type AuthRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
+// AuthResponse структура ответа на аутентификацию.
 type AuthResponse struct {
 	Token string `json:"token"`
 }
 
+// Authenticate аутентификация пользователя.
 func (h *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	var req AuthRequest
 	err := json.NewDecoder(r.Body).Decode(&req)

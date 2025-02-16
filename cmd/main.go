@@ -1,3 +1,5 @@
+// Package main Description: Точка входа в приложение.
+// Здесь происходит инициализация базы данных, DI-контейнера и запуск сервера.
 package main
 
 import (
@@ -38,6 +40,6 @@ func main() {
 	// Запускаем сервер
 	srv := server.NewServer(cfg, dependencies)
 	if err := srv.Run(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }

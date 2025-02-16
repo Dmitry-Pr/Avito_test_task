@@ -1,3 +1,4 @@
+// Package server Description: Описывает сервер приложения
 package server
 
 import (
@@ -14,29 +15,41 @@ import (
 	"time"
 )
 
+// Server описывает сервер приложения
 type Server struct {
 	httpServer *http.Server
 }
 
+// NewServer создает новый сервер приложения
 func NewServer(cfg *config.Config, dependencies *di.Dependencies) *Server {
 	mux := http.NewServeMux()
 
-	mux.Handle("/api/auth", middleware.MethodMiddleware(http.HandlerFunc(dependencies.UserHandler.Authenticate), http.MethodPost))
-	mux.Handle("/api/buy/{item}", middleware.MethodMiddleware(http.HandlerFunc(dependencies.MerchHandler.BuyMerch), http.MethodPost))
-	mux.Handle("/api/info", middleware.MethodMiddleware(http.HandlerFunc(dependencies.TransactionHandler.GetInfo), http.MethodGet))
-	mux.Handle("/api/sendCoin", middleware.MethodMiddleware(http.HandlerFunc(dependencies.TransactionHandler.SendCoin), http.MethodPost))
+	mux.Handle("/api/auth",
+		middleware.MethodMiddleware(http.HandlerFunc(dependencies.UserHandler.Authenticate),
+			http.MethodPost))
+	mux.Handle("/api/buy/{item}",
+		middleware.MethodMiddleware(http.HandlerFunc(dependencies.MerchHandler.BuyMerch),
+			http.MethodPost))
+	mux.Handle("/api/info",
+		middleware.MethodMiddleware(http.HandlerFunc(dependencies.TransactionHandler.GetInfo),
+			http.MethodGet))
+	mux.Handle("/api/sendCoin",
+		middleware.MethodMiddleware(http.HandlerFunc(dependencies.TransactionHandler.SendCoin),
+			http.MethodPost))
 
 	handlerWithMiddleware := middleware.AuthMiddleware(mux)
 	handlerWithMiddleware = middleware.LogsMiddleware(handlerWithMiddleware)
 
 	return &Server{
 		httpServer: &http.Server{
-			Addr:    cfg.Server.Address,
-			Handler: handlerWithMiddleware,
+			Addr:              cfg.Server.Address,
+			Handler:           handlerWithMiddleware,
+			ReadHeaderTimeout: 10 * time.Second,
 		},
 	}
 }
 
+// Run запускает сервер
 func (s *Server) Run() error {
 	log.Println("Запускаем сервер на", s.httpServer.Addr)
 
@@ -61,7 +74,7 @@ func (s *Server) Run() error {
 	defer cancel()
 
 	if err := s.httpServer.Shutdown(ctx); err != nil {
-		log.Fatalf("Ошибка при завершении сервера: %v", err)
+		log.Printf("Ошибка при завершении сервера: %v", err)
 	}
 
 	log.Println("Сервер корректно завершил работу")

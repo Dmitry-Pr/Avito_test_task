@@ -1,3 +1,4 @@
+// Package handlers Description: Описывается обработчик для транзакций.
 package handlers
 
 import (
@@ -7,19 +8,23 @@ import (
 	"net/http"
 )
 
+// TransactionHandlerInterface описывает обработчик для транзакций.
 type TransactionHandlerInterface interface {
 	SendCoin(w http.ResponseWriter, r *http.Request)
 	GetInfo(w http.ResponseWriter, r *http.Request)
 }
 
+// TransactionHandler обработчик для транзакций.
 type TransactionHandler struct {
 	service services.TransactionServiceInterface
 }
 
+// NewTransactionHandler создает новый обработчик для транзакций.
 func NewTransactionHandler(service services.TransactionServiceInterface) TransactionHandlerInterface {
 	return &TransactionHandler{service: service}
 }
 
+// SendCoinRequest структура запроса на отправку монет.
 type SendCoinRequest struct {
 	ToUser string `json:"toUser" validate:"required"`
 	Amount int    `json:"amount" validate:"required,min=0"`
@@ -28,9 +33,10 @@ type SendCoinRequest struct {
 var validator *validation.Validator // Создаем экземпляр валидатора
 
 func init() {
-	validator = validation.NewValidator() // Инициализируем валидатор
+	validator = validation.NewValidator()
 }
 
+// SendCoin отправляет монеты от одного пользователя другому.
 func (h *TransactionHandler) SendCoin(w http.ResponseWriter, r *http.Request) {
 	fromUserID, ok := r.Context().Value("user_id").(uint)
 	if !ok {
@@ -58,6 +64,7 @@ func (h *TransactionHandler) SendCoin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// GetInfo возвращает информацию о транзакциях пользователя.
 func (h *TransactionHandler) GetInfo(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value("user_id").(uint)
 	if !ok {

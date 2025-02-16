@@ -1,3 +1,4 @@
+// Package services Description: Описание сервиса для работы с пользователями.
 package services
 
 import (
@@ -11,18 +12,22 @@ import (
 	"gorm.io/gorm"
 )
 
+// UserServiceInterface описывает сервис для работы с пользователями.
 type UserServiceInterface interface {
 	Authenticate(username, password string) (string, error)
 }
 
+// UserService сервис для работы с пользователями.
 type UserService struct {
 	repo repositories.UserRepositoryInterface
 }
 
+// NewUserService создает новый сервис для работы с пользователями.
 func NewUserService(repo repositories.UserRepositoryInterface) *UserService {
 	return &UserService{repo: repo}
 }
 
+// Authenticate аутентифицирует пользователя.
 func (s *UserService) Authenticate(username, password string) (string, error) {
 	user, err := s.repo.FindByUsername(nil, username)
 	if err != nil {

@@ -1,3 +1,4 @@
+// Package di Description: этот пакет содержит зависимости приложения.
 package di
 
 import (
@@ -8,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// Dependencies содержит зависимости приложения.
 type Dependencies struct {
 	DB                 *gorm.DB
 	MerchRepo          repositories.MerchRepositoryInterface
@@ -22,6 +24,7 @@ type Dependencies struct {
 	TransactionHandler handlers.TransactionHandlerInterface
 }
 
+// BuildDependencies создает новые зависимости приложения.
 func BuildDependencies(db *gorm.DB) *Dependencies {
 	userRepo := repositories.NewUserRepository(db)
 	merchRepo := repositories.NewMerchRepository(db)

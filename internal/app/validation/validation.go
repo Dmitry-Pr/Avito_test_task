@@ -1,21 +1,26 @@
+// Package validation Description: Пакет валидации запросов.
 package validation
 
 import (
 	"fmt"
-	"github.com/go-playground/validator/v10"
 	"strings"
+
+	"github.com/go-playground/validator/v10"
 )
 
+// Validator - структура валидатора
 type Validator struct {
 	validate *validator.Validate
 }
 
+// NewValidator - создает новый валидатор
 func NewValidator() *Validator {
 	return &Validator{
 		validate: validator.New(),
 	}
 }
 
+// ValidateSendCoinRequest - валидация запроса на отправку монет
 func (v *Validator) ValidateSendCoinRequest(req interface{}) error {
 	if err := v.validate.Struct(req); err != nil {
 		var errs []string

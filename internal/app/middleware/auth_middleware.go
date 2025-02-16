@@ -1,3 +1,4 @@
+// Package middleware Description: Middleware для проверки JWT токена
 package middleware
 
 import (
@@ -11,12 +12,18 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// ExcludedPaths - пути, которые не нужно проверять на наличие JWT токена
 var ExcludedPaths = []string{"/api/auth"}
+
+type contextKey string // Define a new type
+
+const (
+	userIDKey contextKey = "user_id" // Use the new type as the key
+)
 
 // AuthMiddleware - middleware для проверки JWT токена
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		for _, path := range ExcludedPaths {
 			if r.URL.Path == path {
 				next.ServeHTTP(w, r)
@@ -48,7 +55,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			userID := uint(claims["user_id"].(float64))
 
-			ctx := context.WithValue(r.Context(), "user_id", userID)
+			ctx := context.WithValue(r.Context(), userIDKey, userID)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)

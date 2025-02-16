@@ -1,3 +1,4 @@
+// Package utils Description: Файл содержит функции для работы с JWT токенами.
 package utils
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// SecretKey - секретный ключ для подписи JWT
 var SecretKey []byte
 
 func init() {
