@@ -2,7 +2,7 @@
 BINARY_NAME=merch-service
 
 # Переменные для путей
-CMD_PATH=cmd/merch-service
+CMD_PATH=cmd
 OUTPUT_PATH=bin
 
 # Установка зависимостей
@@ -48,3 +48,11 @@ run:
 	go run $(CMD_PATH)/main.go
 
 # Запуск через Docker
+.PHONY: docker
+docker:
+	docker compose up -d --build
+
+# Остановка Docker
+.PHONY: stop
+stop:
+	docker compose down

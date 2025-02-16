@@ -1,25 +1,45 @@
+// Package main Description: Точка входа в приложение.
+// Здесь происходит инициализация базы данных, DI-контейнера и запуск сервера.
 package main
 
 import (
-  "fmt"
+	"log"
+	"merch-shop/internal/app/di"
+	"merch-shop/internal/config"
+	"merch-shop/internal/pkg/db"
+	"merch-shop/internal/server"
+
+	"github.com/joho/godotenv"
 )
 
-//TIP To run your code, right-click the code and select <b>Run</b>. Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.
-
 func main() {
-  //TIP Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined or highlighted text
-  // to see how GoLand suggests fixing it.
-  s := "gopher"
-  fmt.Println("Hello and welcome, %s!", s)
+	// Загружаем .env
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Ошибка загрузки .env файла")
+	}
 
-  for i := 1; i <= 5; i++ {
-	//TIP You can try debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-	// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>. To start your debugging session, 
-	// right-click your code in the editor and select the <b>Debug</b> option. 
-	fmt.Println("i =", 100/i)
-  }
+	// Загружаем конфиг
+	cfg := config.LoadConfig()
+
+	// Инициализируем базу данных
+	database := db.InitDB()
+	sqlDB, err := database.DB()
+	if err != nil {
+		log.Fatal("Ошибка получения *sql.DB из Gorm")
+	}
+	defer func() {
+		log.Println("Закрываем соединение с базой данных")
+		if err := sqlDB.Close(); err != nil {
+			log.Println("Ошибка закрытия соединения с базой данных:", err)
+		}
+	}()
+
+	// Создаем DI-контейнер
+	dependencies := di.BuildDependencies(database)
+
+	// Запускаем сервер
+	srv := server.NewServer(cfg, dependencies)
+	if err := srv.Run(); err != nil {
+		log.Println(err)
+	}
 }
-
-//TIP See GoLand help at <a href="https://www.jetbrains.com/help/go/">jetbrains.com/help/go/</a>.
-// Also, you can try interactive lessons for GoLand by selecting 'Help | Learn IDE Features' from the main menu.
