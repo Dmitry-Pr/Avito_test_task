@@ -6,25 +6,41 @@ import (
 	"gorm.io/gorm"
 )
 
-type IUserRepository interface {
-	FindByUsername(username string) (*models.User, error)
-	Save(user *models.User) error
+type UserRepositoryInterface interface {
+	FindByUsername(tx *gorm.DB, username string) (*models.User, error)
+	FindByID(tx *gorm.DB, userID uint) (*models.User, error)
+	Save(tx *gorm.DB, user *models.User) error
 }
 
 type UserRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
+func NewUserRepository(db *gorm.DB) UserRepositoryInterface {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
+func (r *UserRepository) FindByUsername(tx *gorm.DB, username string) (*models.User, error) {
+	if tx == nil {
+		tx = r.db
+	}
 	var user models.User
-	result := r.db.Where("username = ?", username).First(&user)
+	result := tx.Where("username = ?", username).First(&user)
 	return &user, result.Error
 }
 
-func (r *UserRepository) Save(user *models.User) error {
-	return r.db.Save(user).Error
+func (r *UserRepository) FindByID(tx *gorm.DB, userID uint) (*models.User, error) {
+	if tx == nil {
+		tx = r.db
+	}
+	var user models.User
+	result := tx.Where("id = ?", userID).First(&user)
+	return &user, result.Error
+}
+
+func (r *UserRepository) Save(tx *gorm.DB, user *models.User) error {
+	if tx == nil {
+		tx = r.db
+	}
+	return tx.Save(user).Error
 }

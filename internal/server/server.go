@@ -22,11 +22,12 @@ type Server struct {
 func NewServer(cfg *config.Config, dependencies *di.Dependencies) *Server {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/auth", dependencies.UserHandler.Authenticate)
-	mux.HandleFunc("/api/merch", dependencies.MerchHandler.GetMerch)
+	mux.Handle("/api/auth", middleware.MethodMiddleware(http.HandlerFunc(dependencies.UserHandler.Authenticate), http.MethodPost))
+	mux.Handle("/api/merch", middleware.MethodMiddleware(http.HandlerFunc(dependencies.MerchHandler.GetMerch), http.MethodGet))
+	mux.Handle("/api/buy/{item}", middleware.MethodMiddleware(http.HandlerFunc(dependencies.MerchHandler.BuyMerch), http.MethodPost))
 
 	handlerWithMiddleware := middleware.AuthMiddleware(mux)
-	handlerWithMiddleware = middleware.LogsMiddleware(mux)
+	handlerWithMiddleware = middleware.LogsMiddleware(handlerWithMiddleware)
 
 	return &Server{
 		httpServer: &http.Server{

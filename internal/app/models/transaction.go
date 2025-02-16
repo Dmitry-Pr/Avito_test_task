@@ -7,7 +7,7 @@ type Transaction struct {
 	UserID     uint
 	User       User `gorm:"foreignKey:UserID"`
 	Type       string
-	Amount     int64
+	Amount     int
 	FromUserID *uint `gorm:"nullable:true"`
 	FromUser   *User `gorm:"foreignKey:FromUserID;constraint:OnUpdate:CASCADE;nullable:true"`
 	ToUserID   *uint `gorm:"nullable:true"`

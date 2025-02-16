@@ -11,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var ExcludedPaths = []string{"/api/auth"}
+var ExcludedPaths = []string{"/api/auth", "api/merch"}
 
 // AuthMiddleware - middleware для проверки JWT токена
 func AuthMiddleware(next http.Handler) http.Handler {
@@ -27,7 +27,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		authHeader := r.Header.Get("Authorization")
 
 		if authHeader == "" {
-			http.Error(w, "Не авторизован", http.StatusUnauthorized)
+			http.Error(w, "Неавторизован", http.StatusUnauthorized)
 			return
 		}
 
@@ -41,7 +41,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		})
 
 		if err != nil {
-			http.Error(w, "Не авторизован", http.StatusUnauthorized)
+			http.Error(w, "Неавторизован", http.StatusUnauthorized)
 			return
 		}
 
@@ -53,7 +53,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 			next.ServeHTTP(w, r)
 		} else {
-			http.Error(w, "Не авторизован", http.StatusUnauthorized)
+			http.Error(w, "Неавторизован", http.StatusUnauthorized)
 			return
 		}
 	})

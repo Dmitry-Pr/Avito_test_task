@@ -9,31 +9,35 @@ import (
 )
 
 type Dependencies struct {
-	DB           *gorm.DB
-	MerchRepo    repositories.MerchRepositoryInterface
-	MerchService services.MerchServiceInterface
-	MerchHandler handlers.MerchHandlerInterface
-	UserRepo     repositories.IUserRepository
-	UserService  services.IUserService
-	UserHandler  handlers.IUserHandler
+	DB              *gorm.DB
+	MerchRepo       repositories.MerchRepositoryInterface
+	MerchService    services.MerchServiceInterface
+	MerchHandler    handlers.MerchHandlerInterface
+	UserRepo        repositories.UserRepositoryInterface
+	UserService     services.UserServiceInterface
+	UserHandler     handlers.UserHandlerInterface
+	TransactionRepo repositories.TransactionRepositoryInterface
 }
 
 func BuildDependencies(db *gorm.DB) *Dependencies {
-	merchRepo := repositories.NewMerchRepository(db)
-	merchService := services.NewMerchService(merchRepo)
-	merchHandler := handlers.NewMerchHandler(merchService)
-
 	userRepo := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
 	userHandler := handlers.NewUserHandler(userService)
 
+	transactionRepo := repositories.NewTransactionRepository(db)
+
+	merchRepo := repositories.NewMerchRepository(db)
+	merchService := services.NewMerchService(merchRepo, userRepo, transactionRepo)
+	merchHandler := handlers.NewMerchHandler(merchService)
+
 	return &Dependencies{
-		DB:           db,
-		MerchRepo:    merchRepo,
-		MerchService: merchService,
-		MerchHandler: merchHandler,
-		UserRepo:     userRepo,
-		UserService:  userService,
-		UserHandler:  userHandler,
+		DB:              db,
+		MerchRepo:       merchRepo,
+		MerchService:    merchService,
+		MerchHandler:    merchHandler,
+		UserRepo:        userRepo,
+		UserService:     userService,
+		UserHandler:     userHandler,
+		TransactionRepo: transactionRepo,
 	}
 }

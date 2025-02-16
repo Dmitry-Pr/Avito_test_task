@@ -11,20 +11,20 @@ import (
 	"gorm.io/gorm"
 )
 
-type IUserService interface {
+type UserServiceInterface interface {
 	Authenticate(username, password string) (string, error)
 }
 
 type UserService struct {
-	repo repositories.IUserRepository
+	repo repositories.UserRepositoryInterface
 }
 
-func NewUserService(repo repositories.IUserRepository) *UserService {
+func NewUserService(repo repositories.UserRepositoryInterface) *UserService {
 	return &UserService{repo: repo}
 }
 
 func (s *UserService) Authenticate(username, password string) (string, error) {
-	user, err := s.repo.FindByUsername(username)
+	user, err := s.repo.FindByUsername(nil, username)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -33,7 +33,7 @@ func (s *UserService) Authenticate(username, password string) (string, error) {
 			}
 
 			newUser := &models.User{Username: username, Password: string(hashedPassword)}
-			if err := s.repo.Save(newUser); err != nil {
+			if err := s.repo.Save(nil, newUser); err != nil {
 				return "", fmt.Errorf("не удалось создать пользователя: %w", err)
 			}
 			user = newUser
