@@ -12,7 +12,7 @@ type Merch struct {
 }
 
 type MerchRepositoryInterface interface {
-	GetAll(tx *gorm.DB) ([]string, error)
+	GetAll(tx *gorm.DB) (map[uint]string, error)
 	GetMerchByName(tx *gorm.DB, name string) (*models.Merch, error)
 	GetDB() *gorm.DB
 }
@@ -25,19 +25,19 @@ func NewMerchRepository(db *gorm.DB) MerchRepositoryInterface {
 	return &MerchRepository{db: db}
 }
 
-func (r *MerchRepository) GetAll(tx *gorm.DB) ([]string, error) {
+func (r *MerchRepository) GetAll(tx *gorm.DB) (map[uint]string, error) {
 	if tx == nil {
 		tx = r.db
 	}
-	var merchList []string
+	merchMap := make(map[uint]string)
 	var merchItems []Merch
-	if err := tx.Model(&Merch{}).Select("name").Find(&merchItems).Error; err != nil {
+	if err := tx.Model(&Merch{}).Find(&merchItems).Error; err != nil {
 		return nil, err
 	}
 	for _, item := range merchItems {
-		merchList = append(merchList, item.Name)
+		merchMap[item.ID] = item.Name
 	}
-	return merchList, nil
+	return merchMap, nil
 }
 
 func (r *MerchRepository) GetMerchByName(tx *gorm.DB, name string) (*models.Merch, error) {

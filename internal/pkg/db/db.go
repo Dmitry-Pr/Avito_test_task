@@ -42,7 +42,7 @@ func InitDB() *gorm.DB {
 
 	log.Println("Подключение к БД установлено")
 
-	err = db.AutoMigrate(&models.User{}, &models.Merch{}, models.Transaction{})
+	err = db.AutoMigrate(&models.User{}, &models.Merch{}, models.Transaction{}, models.Inventory{})
 	if err != nil {
 		log.Fatal("Ошибка миграции таблиц: ", err)
 	}

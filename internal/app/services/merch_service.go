@@ -9,7 +9,6 @@ import (
 )
 
 type MerchServiceInterface interface {
-	GetAllMerch() ([]string, error)
 	BuyMerch(userID uint, merchName string) error
 }
 
@@ -17,18 +16,16 @@ type MerchService struct {
 	repo            repositories.MerchRepositoryInterface
 	userRepo        repositories.UserRepositoryInterface
 	transactionRepo repositories.TransactionRepositoryInterface
+	inventoryRepo   repositories.InventoryRepositoryInterface
 }
 
 func NewMerchService(
 	repo repositories.MerchRepositoryInterface,
 	userRepo repositories.UserRepositoryInterface,
 	transactionRepo repositories.TransactionRepositoryInterface,
+	inventoryRepo repositories.InventoryRepositoryInterface,
 ) MerchServiceInterface {
-	return &MerchService{repo: repo, userRepo: userRepo, transactionRepo: transactionRepo}
-}
-
-func (s *MerchService) GetAllMerch() ([]string, error) {
-	return s.repo.GetAll(nil)
+	return &MerchService{repo: repo, userRepo: userRepo, transactionRepo: transactionRepo, inventoryRepo: inventoryRepo}
 }
 
 func (s *MerchService) BuyMerch(userID uint, merchName string) error {
@@ -58,6 +55,11 @@ func (s *MerchService) BuyMerch(userID uint, merchName string) error {
 		user.Coins -= merch.Price
 		if err := s.userRepo.Save(tx, user); err != nil {
 			return fmt.Errorf("не удалось обновить количество монет пользователя: %w", err)
+		}
+
+		merchID := merch.ID
+		if err := s.inventoryRepo.CreateOrUpdate(tx, userID, merchID); err != nil {
+			return fmt.Errorf("не удалось добавить мерч пользователю: %w", err)
 		}
 
 		return nil

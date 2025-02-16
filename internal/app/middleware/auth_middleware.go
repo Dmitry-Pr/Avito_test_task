@@ -11,7 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var ExcludedPaths = []string{"/api/auth", "api/merch"}
+var ExcludedPaths = []string{"/api/auth"}
 
 // AuthMiddleware - middleware для проверки JWT токена
 func AuthMiddleware(next http.Handler) http.Handler {

@@ -8,7 +8,6 @@ import (
 	"merch-shop/internal/app/middleware"
 	"merch-shop/internal/config"
 	"net/http"
-	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,8 +22,9 @@ func NewServer(cfg *config.Config, dependencies *di.Dependencies) *Server {
 	mux := http.NewServeMux()
 
 	mux.Handle("/api/auth", middleware.MethodMiddleware(http.HandlerFunc(dependencies.UserHandler.Authenticate), http.MethodPost))
-	mux.Handle("/api/merch", middleware.MethodMiddleware(http.HandlerFunc(dependencies.MerchHandler.GetMerch), http.MethodGet))
 	mux.Handle("/api/buy/{item}", middleware.MethodMiddleware(http.HandlerFunc(dependencies.MerchHandler.BuyMerch), http.MethodPost))
+	mux.Handle("/api/info", middleware.MethodMiddleware(http.HandlerFunc(dependencies.TransactionHandler.GetInfo), http.MethodGet))
+	mux.Handle("/api/sendCoin", middleware.MethodMiddleware(http.HandlerFunc(dependencies.TransactionHandler.SendCoin), http.MethodPost))
 
 	handlerWithMiddleware := middleware.AuthMiddleware(mux)
 	handlerWithMiddleware = middleware.LogsMiddleware(handlerWithMiddleware)
