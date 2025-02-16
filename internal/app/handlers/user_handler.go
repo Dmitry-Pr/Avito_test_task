@@ -4,6 +4,7 @@ package handlers
 import (
 	"encoding/json"
 	"merch-shop/internal/app/services"
+	"merch-shop/internal/pkg/errors"
 	"net/http"
 )
 
@@ -38,22 +39,42 @@ func (h *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	var req AuthRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		http.Error(w, "Ошибка декодирования запроса", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		jsonErr := errors.NewErrorResponse("Ошибка декодирования запроса")
+		err := json.NewEncoder(w).Encode(jsonErr)
+		if err != nil {
+			return
+		}
 		return
 	}
 	if req.Username == "" || req.Password == "" {
-		http.Error(w, "Некорректные данные", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		jsonErr := errors.NewErrorResponse("Некорректные данные")
+		err := json.NewEncoder(w).Encode(jsonErr)
+		if err != nil {
+			return
+		}
 		return
 	}
 	token, err := h.userService.Authenticate(req.Username, req.Password)
 	if err != nil {
-		http.Error(w, "Неавторизован", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		jsonErr := errors.NewErrorResponse("Не авторизован")
+		err := json.NewEncoder(w).Encode(jsonErr)
+		if err != nil {
+			return
+		}
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(AuthResponse{Token: token})
 	if err != nil {
-		http.Error(w, "Ошибка кодирования ответа", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		jsonErr := errors.NewErrorResponse("Ошибка кодирования ответа")
+		err := json.NewEncoder(w).Encode(jsonErr)
+		if err != nil {
+			return
+		}
 		return
 	}
 }

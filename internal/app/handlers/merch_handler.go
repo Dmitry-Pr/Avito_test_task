@@ -2,7 +2,10 @@
 package handlers
 
 import (
+	"encoding/json"
+	"merch-shop/internal/app/middleware"
 	"merch-shop/internal/app/services"
+	"merch-shop/internal/pkg/errors"
 	"net/http"
 	"strings"
 )
@@ -24,9 +27,14 @@ func NewMerchHandler(service services.MerchServiceInterface) MerchHandlerInterfa
 
 // BuyMerch купить мерч.
 func (h *MerchHandler) BuyMerch(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value("user_id").(uint)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(uint)
 	if !ok {
-		http.Error(w, "Неавторизован", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		jsonErr := errors.NewErrorResponse("Не авторизован")
+		err := json.NewEncoder(w).Encode(jsonErr)
+		if err != nil {
+			return
+		}
 		return
 	}
 
@@ -36,13 +44,23 @@ func (h *MerchHandler) BuyMerch(w http.ResponseWriter, r *http.Request) {
 	item = pathParts[len(pathParts)-1]
 
 	if item == "" {
-		http.Error(w, "Не указан предмет для покупки", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		jsonErr := errors.NewErrorResponse("Не указан предмет для покупки")
+		err := json.NewEncoder(w).Encode(jsonErr)
+		if err != nil {
+			return
+		}
 		return
 	}
 
 	err := h.service.BuyMerch(userID, item)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		jsonErr := errors.NewErrorResponse(err.Error())
+		err := json.NewEncoder(w).Encode(jsonErr)
+		if err != nil {
+			return
+		}
 		return
 	}
 

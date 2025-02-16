@@ -3,7 +3,9 @@ package middleware
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"merch-shop/internal/pkg/errors"
 	"net/http"
 	"strings"
 
@@ -18,7 +20,8 @@ var ExcludedPaths = []string{"/api/auth"}
 type contextKey string // Define a new type
 
 const (
-	userIDKey contextKey = "user_id" // Use the new type as the key
+	// UserIDKey - ключ id пользователя для контекста
+	UserIDKey contextKey = "user_id"
 )
 
 // AuthMiddleware - middleware для проверки JWT токена
@@ -34,7 +37,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		authHeader := r.Header.Get("Authorization")
 
 		if authHeader == "" {
-			http.Error(w, "Неавторизован", http.StatusUnauthorized)
+			w.WriteHeader(http.StatusUnauthorized)
+			jsonErr := errors.NewErrorResponse("Не авторизован")
+			err := json.NewEncoder(w).Encode(jsonErr)
+			if err != nil {
+				return
+			}
 			return
 		}
 
@@ -48,19 +56,29 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		})
 
 		if err != nil {
-			http.Error(w, "Неавторизован", http.StatusUnauthorized)
+			w.WriteHeader(http.StatusUnauthorized)
+			jsonErr := errors.NewErrorResponse("Не авторизован")
+			err := json.NewEncoder(w).Encode(jsonErr)
+			if err != nil {
+				return
+			}
 			return
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			userID := uint(claims["user_id"].(float64))
 
-			ctx := context.WithValue(r.Context(), userIDKey, userID)
+			ctx := context.WithValue(r.Context(), UserIDKey, userID)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)
 		} else {
-			http.Error(w, "Неавторизован", http.StatusUnauthorized)
+			w.WriteHeader(http.StatusUnauthorized)
+			jsonErr := errors.NewErrorResponse("Не авторизован")
+			err := json.NewEncoder(w).Encode(jsonErr)
+			if err != nil {
+				return
+			}
 			return
 		}
 	})
