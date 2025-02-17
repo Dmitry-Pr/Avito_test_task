@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=transaction_service.go -destination=../../../mocks/services/transaction_service.go
+
 // TransactionServiceInterface описывает сервис для работы с транзакциями.
 type TransactionServiceInterface interface {
 	GetUserTransactionInfo(userID uint) (interface{}, error)
@@ -41,14 +43,14 @@ func NewTransactionService(
 
 // GetUserTransactionInfo получает информацию о транзакциях пользователя.
 func (s *TransactionService) GetUserTransactionInfo(userID uint) (interface{}, error) {
-	transactions, err := s.transactionRepo.GetTransactionsByUser(nil, userID)
-	if err != nil {
-		return nil, fmt.Errorf("транзакции не найдены: %w", err)
-	}
-
 	user, err := s.userRepo.FindByID(nil, userID)
 	if err != nil {
 		return nil, fmt.Errorf("пользователь не найден: %w", err)
+	}
+
+	transactions, err := s.transactionRepo.GetTransactionsByUser(nil, userID)
+	if err != nil {
+		return nil, fmt.Errorf("транзакции не найдены: %w", err)
 	}
 
 	inventory := make([]map[string]interface{}, 0)

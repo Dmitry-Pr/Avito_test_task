@@ -9,6 +9,7 @@
 - [Архитектура](#архитектура)
 - [Заполнение `.env` файла](#заполнение-env-файла)
 - [API Specification (OpenAPI)](#api-specification-openapi)
+- [Тесты](#тесты)
 
 ## Магазин мерча
 
@@ -64,6 +65,29 @@ DB_NAME=shop
 SERVER_ADDRESS=:8080
 JWT_SECRET_KEY=df3ce9cd-6084-47ac-bd89-a4d89bdad6f3
 ```
+
+## Тесты
+
+### Отчет
+Сервисный слой (основная бизнес логика) покрыта юнит тестами. Общее покрытие проекта составляет более 60%
+
+### Запуск
+
+- Предпочтительно: если у вас установлен make, выполнить в корне:
+```
+make test
+```
+
+- Иначе в корне проекта выполнить:
+```
+cd ./internal/app/services
+go generate
+cd ../repositories
+go generate
+cd ../../../
+go test -cover -race -v -coverpkg=./... ./tests/...
+```
+
 
 ## API Specification (OpenAPI)
 

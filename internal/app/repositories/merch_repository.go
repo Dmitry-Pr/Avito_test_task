@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=merch_repository.go -destination=../../../mocks/repositories/merch_repository.go
+
 // Merch описывает товар.
 type Merch struct {
 	ID   uint   `gorm:"primaryKey"`

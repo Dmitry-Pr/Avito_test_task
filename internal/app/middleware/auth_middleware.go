@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"merch-shop/internal/pkg/errors"
 	"net/http"
+	"os"
 	"strings"
-
-	"merch-shop/internal/pkg/utils"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -52,7 +51,13 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("неизвестный метод подписи токена: %v", token.Method)
 			}
-			return utils.SecretKey, nil
+
+			secretKey := os.Getenv("JWT_SECRET_KEY")
+			if secretKey == "" {
+				return "", fmt.Errorf("JWT_SECRET_KEY переменная среды не найдена")
+			}
+
+			return []byte(secretKey), nil
 		})
 
 		if err != nil {

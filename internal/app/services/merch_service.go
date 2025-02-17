@@ -10,6 +10,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=merch_service.go -destination=../../../mocks/services/merch_service.go
+
 // MerchServiceInterface описывает сервис для работы с мерчем.
 type MerchServiceInterface interface {
 	BuyMerch(userID uint, merchName string) error

@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=inventory_repository.go -destination=../../../mocks/repositories/inventory_repository.go
+
 // InventoryRepositoryInterface описывает репозиторий для инвентаря.
 type InventoryRepositoryInterface interface {
 	CreateOrUpdate(tx *gorm.DB, userID uint, merchID uint) error

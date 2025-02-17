@@ -30,7 +30,8 @@ vet:
 # Запуск юнит-тестов с покрытием кода
 .PHONY: test
 test:
-	go test -cover -race -v ./...
+	make mocks
+	go test -cover -race -v -coverpkg=./... ./tests/...
 
 # Запуск интеграционных тестов
 .PHONY: test-integration
@@ -56,3 +57,10 @@ docker:
 .PHONY: stop
 stop:
 	docker compose down
+
+
+# Генерация моков
+.PHONY: mocks
+mocks:
+	cd ./internal/app/services && go generate
+	cd ./internal/app/repositories && go generate
