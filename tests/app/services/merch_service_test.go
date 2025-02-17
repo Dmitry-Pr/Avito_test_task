@@ -65,7 +65,10 @@ func TestBuyMerch(t *testing.T) {
 				if err != nil {
 					t.Error(err)
 				}
-				sqlDB.Close()
+				err = sqlDB.Close()
+				if err != nil {
+					t.Error(err)
+				}
 			}()
 
 			err = db.AutoMigrate(&models.User{}, &models.Merch{}, &models.Transaction{}, &models.Inventory{})
