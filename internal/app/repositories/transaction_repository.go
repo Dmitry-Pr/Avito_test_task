@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=transaction_repository.go -destination=../../../mocks/repositories/transaction_repository.go
+
 const (
 	// BuyType описывает тип транзакции покупки.
 	BuyType = "buy"

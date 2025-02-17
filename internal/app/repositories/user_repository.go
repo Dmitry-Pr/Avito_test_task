@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=user_repository.go -destination=../../../mocks/repositories/user_repository.go
+
 // UserRepositoryInterface описывает репозиторий для пользователей.
 type UserRepositoryInterface interface {
 	FindByUsername(tx *gorm.DB, username string) (*models.User, error)
