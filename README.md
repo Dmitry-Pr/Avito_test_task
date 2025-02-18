@@ -32,7 +32,7 @@
 - иметь открытый порт 8080 
 - запустить docker на устройстве
 - [создать .env файл в корне проекта](#заполнение-env-файла) (__ВНИМАНИЕ__, в целях упрощения запуска проверяющим, я добавил .env файл в проект, в проде так делать нельзя!)
-- выполнить команду: ```docker compose up -d --build```
+- выполнить в корне проекта команду: ```docker compose up -d --build```
 - приложение будет доступно по адресу: `localhost:8080/api/auth`
 
 ## Стек технологий
@@ -73,21 +73,12 @@ JWT_SECRET_KEY=df3ce9cd-6084-47ac-bd89-a4d89bdad6f3
 
 ### Запуск
 
-- Предпочтительно: если у вас установлен make, выполнить в корне:
+В корне проекта выполнить:
 ```
-make test
-```
-
-- Иначе в корне проекта выполнить:
-```
-cd ./internal/app/services
-go generate
-cd ../repositories
-go generate
-cd ../../../
-go test -cover -race -v -coverpkg=./... ./tests/...
+docker-compose up -d --build
 ```
 
+тесты запустятся в контейнере merch-shop-test
 
 ## API Specification (OpenAPI)
 
