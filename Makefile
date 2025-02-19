@@ -31,7 +31,7 @@ vet:
 .PHONY: test
 test:
 	make mocks
-	go test -cover -race -v -coverpkg=./... ./tests/...
+	CGO_ENABLED=1 go test -cover -race -v -coverpkg=./internal/... ./tests/...
 
 # Запуск интеграционных тестов
 .PHONY: test-integration
