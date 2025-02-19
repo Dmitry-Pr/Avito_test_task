@@ -30,9 +30,8 @@ vet:
 # Запуск юнит-тестов с покрытием кода
 .PHONY: test
 test:
-	go install github.com/golang/mock/mockgen@v1.6.0
 	make mocks
-	CGO_ENABLED=1 go test -cover -race -v -coverpkg=./... ./tests/...
+	CGO_ENABLED=1 go test -cover -race -v -coverpkg=./internal/... ./tests/...
 
 # Запуск интеграционных тестов
 .PHONY: test-integration

@@ -80,3 +80,8 @@ func (s *Server) Run() error {
 	log.Println("Сервер корректно завершил работу")
 	return nil
 }
+
+// HTTPHandler - метод получения хендлера для тестов
+func (s *Server) HTTPHandler() http.Handler {
+	return s.httpServer.Handler
+}

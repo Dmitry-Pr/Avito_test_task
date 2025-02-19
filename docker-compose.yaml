@@ -39,10 +39,41 @@ services:
       start_period: 10s
     networks:
       - internal
+
   merch-shop-test:
+    container_name: merch-shop-test
+    environment:
+      DB_PORT: 5432
+      DB_USER: testuser
+      DB_PASSWORD: testpassword
+      DB_NAME: testdb
+      DB_HOST: test_db
     build:
       context: .
       dockerfile: tests/Dockerfile
+    depends_on:
+      test_db:
+        condition: service_healthy
+    networks:
+      - internal
+
+  test_db:
+    image: postgres:15
+    container_name: test-db
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U testuser -d testdb" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - internal
 
 volumes:
   pgdata:
